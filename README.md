@@ -1,6 +1,6 @@
-# Simple Alarm
+# Alarm
 
-A Kotlin Android alarm app with a plain interface. Add, edit, enable or delete alarms; choose a one-time alarm or a daily repeat. Stop a ringing alarm by solving a small multiplication question or completing 5–100 shakes.
+A Kotlin Android alarm app with a plain interface. Add, edit, enable or delete alarms; choose a one-time alarm or a daily repeat. Stop a ringing alarm by solving a small multiplication question or completing 30–100 shakes. Existing alarms with a lower shake target now use 30.
 
 ## Sounds
 
@@ -14,7 +14,7 @@ Open in Android Studio, sync Gradle and run on Android 7.0 or newer. On first us
 
 The alarm uses the phone's alarm volume, with optional vibration. Alarms are restored after reboot, app updates and time changes. Deleted or inaccessible custom audio falls back to the phone's default sound. Devices without an accelerometer use the math challenge instead.
 
-Shake detection counts separate acceleration bursts, with a cooldown and a return to lower acceleration between counts. Progress and math questions survive screen rotation and reopening while the service is running. Editor drafts survive activity recreation. Leaving the challenge does not stop the ringing service. Simultaneous alarms wait in a queue; editing or deleting a saved alarm does not change its already-ringing challenge.
+Shake detection counts changes of direction during gentle back-and-forth motion. It uses Android's linear acceleration sensor when available, otherwise filters gravity out of raw accelerometer readings. A 120 ms minimum interval rejects repeated samples; movements more than one second apart start a new sequence. Stationary noise and sustained motion in one direction do not increment progress. Progress and math questions survive screen rotation and reopening while the service is running. Editor drafts survive activity recreation. Leaving the challenge does not stop the ringing service. Simultaneous alarms wait in a queue; editing or deleting a saved alarm does not change its already-ringing challenge.
 
 Force-stopping the app prevents alarms until it is opened again. Manufacturer battery restrictions, muted alarm volume and system service controls can affect ringing. Test locked-screen delivery, reboot restoration, custom audio access and shake sensitivity on a physical device before relying on it.
 

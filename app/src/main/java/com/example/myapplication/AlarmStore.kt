@@ -10,7 +10,7 @@ import org.json.JSONObject
 
 data class Alarm(
     val id: Int, val hour: Int, val minute: Int, val label: String = "Alarm",
-    val challenge: String = "Math", val shakes: Int = 20, val tone: String = "",
+    val challenge: String = "Math", val shakes: Int = 30, val tone: String = "",
     val toneName: String = "Phone default", val daily: Boolean = false,
     val vibrate: Boolean = true, val enabled: Boolean = true
 )
@@ -22,7 +22,7 @@ class AlarmStore(private val context: Context) {
         return (0 until array.length()).map { i ->
             val o = array.getJSONObject(i)
             Alarm(o.getInt("id"), o.getInt("hour"), o.getInt("minute"), o.getString("label"),
-                o.getString("challenge"), o.getInt("shakes"), o.getString("tone"),
+                o.getString("challenge"), o.getInt("shakes").coerceIn(30, 100), o.getString("tone"),
                 o.getString("toneName"), o.getBoolean("daily"), o.getBoolean("vibrate"), o.getBoolean("enabled"))
         }.sortedWith(compareBy({ it.hour }, { it.minute }))
     }

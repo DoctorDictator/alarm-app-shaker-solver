@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(dp(20), bars.top + dp(16), dp(20), bars.bottom + dp(16)); insets
         }
-        content.addView(TextView(this).apply { text = "Simple Alarm"; textSize = 28f })
+        content.addView(TextView(this).apply { text = getString(R.string.app_name); textSize = 28f })
         content.addView(TextView(this).apply { text = "Wake up with a little effort."; textSize = 16f })
         if (!AlarmScheduler(this).allowed()) addButton("Allow alarms & reminders") {
             startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName")))
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         val label = EditText(this).apply { hint = "Alarm name"; setSingleLine(); setText(draft?.getString("label") ?: existing?.label ?: "Alarm") }; form.addView(label)
         form.addView(TextView(this).apply { text = "Stop alarm by completing:" })
         val mode = Spinner(this).apply { adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, listOf("Math", "Shake")); setSelection(draft?.getInt("mode") ?: if (existing?.challenge == "Shake") 1 else 0) }; form.addView(mode)
-        val shakes = EditText(this).apply { hint = "Shake count (5–100)"; inputType = InputType.TYPE_CLASS_NUMBER; setText(draft?.getString("shakes") ?: (existing?.shakes ?: 20).toString()) }; form.addView(shakes)
+        val shakes = EditText(this).apply { hint = "Shake count (30–100)"; inputType = InputType.TYPE_CLASS_NUMBER; setText(draft?.getString("shakes") ?: (existing?.shakes ?: 30).toString()) }; form.addView(shakes)
         mode.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) { shakes.visibility = if (position == 1) View.VISIBLE else View.GONE }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -139,10 +139,11 @@ class MainActivity : AppCompatActivity() {
         dialog.setOnDismissListener { editorState = null; toneButton = null }
         dialog.setOnShowListener { dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             val count = shakes.text.toString().toIntOrNull()
-            if (mode.selectedItemPosition == 1 && (count == null || count !in 5..100)) { shakes.error = "Enter 5 to 100"; return@setOnClickListener }
-            if (mode.selectedItemPosition == 1 && getSystemService(android.hardware.SensorManager::class.java).getDefaultSensor(android.hardware.Sensor.TYPE_ACCELEROMETER) == null) { toast("This device has no shake sensor. Choose Math."); return@setOnClickListener }
+            if (mode.selectedItemPosition == 1 && (count == null || count !in 30..100)) { shakes.error = "Enter 30 to 100"; return@setOnClickListener }
+            val sensorManager = getSystemService(android.hardware.SensorManager::class.java)
+            if (mode.selectedItemPosition == 1 && sensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_ACCELEROMETER) == null && sensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_LINEAR_ACCELERATION) == null) { toast("This device has no shake sensor. Choose Math."); return@setOnClickListener }
             val alarm = Alarm(existing?.id ?: AlarmStore(this).nextId(), clock.hour, clock.minute,
-                label.text.toString().trim().ifEmpty { "Alarm" }, mode.selectedItem.toString(), count ?: 20,
+                label.text.toString().trim().ifEmpty { "Alarm" }, mode.selectedItem.toString(), (count ?: 30).coerceIn(30, 100),
                 selectedTone, selectedToneName, daily.isChecked, vibration.isChecked, existing?.enabled ?: true)
             if (!AlarmScheduler(this).schedule(alarm)) { toast("Allow alarms & reminders, then save again."); return@setOnClickListener }
             AlarmStore(this).save(alarm); dialog.dismiss(); toast("Alarm saved"); render()

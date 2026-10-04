@@ -1,0 +1,5 @@
+<resources>
+    <style name="Theme.MyApplication" parent="Base.Theme.MyApplication">
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

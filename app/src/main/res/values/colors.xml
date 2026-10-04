@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="alarm_primary">#365F80</color>
+    <color name="alarm_primary_variant">#244561</color>
+    <color name="alarm_on_primary">#FFFFFF</color>
+    <color name="alarm_background_start">#F5F8FC</color>
+    <color name="alarm_background_end">#E4EDF6</color>
+    <color name="alarm_surface">#F5F8FC</color>
+    <color name="alarm_text">#1E3042</color>
+    <color name="alarm_text_secondary">#4D6275</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
